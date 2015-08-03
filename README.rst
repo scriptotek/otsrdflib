@@ -1,3 +1,19 @@
+.. image:: https://img.shields.io/travis/scriptotek/otsrdflib.svg
+   :target: https://travis-ci.org/scriptotek/otsrdflib
+   :alt: Build status
+
+.. image:: https://landscape.io/github/scriptotek/otsrdflib/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/scriptotek/otsrdflib/master
+   :alt: Code health
+
+.. image:: https://img.shields.io/pypi/v/otsrdflib.svg
+   :target: https://pypi.python.org/pypi/otsrdflib
+   :alt: Latest version
+
+.. image:: https://img.shields.io/github/license/scriptotek/otsrdflib.svg
+   :target: http://opensource.org/licenses/MIT
+   :alt: MIT license
+
 Ordered Turtle Serializer for rdflib
 ====================================
 
