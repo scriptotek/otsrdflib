@@ -8,14 +8,14 @@ easier for human beings to inspect the files.
 
 .. code-block:: console
 
-    $ pip install rdflib_ots
+    $ pip install otsrdflib
 
 Usage:
 
 .. code-block:: python
 
     from rdflib import graph
-    from rdflib_ots import OrderedTurtleSerializer
+    from otsrdflib import OrderedTurtleSerializer
 
     my_graph = Graph()
 

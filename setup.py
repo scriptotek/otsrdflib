@@ -14,7 +14,7 @@ except ImportError:
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
-setup(name='rdflib_ots',
+setup(name='otsrdflib',
       version='0.1.0',
       description='Ordered Turtle Serializer for rdflib',
       long_description=README,
@@ -30,7 +30,7 @@ setup(name='rdflib_ots',
       author_email='danmichaelo@gmail.com',
       url='https://github.com/scriptotek/rdflib_ots',
       license='MIT',
-      packages=['rdflib_ots'],
+      packages=['otsrdflib'],
       install_requires=['rdflib'],
       zip_safe=True
       )
