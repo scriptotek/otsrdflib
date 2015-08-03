@@ -15,7 +15,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
 setup(name='otsrdflib',
-      version='0.1.0',
+      version='0.2.1',
       description='Ordered Turtle Serializer for rdflib',
       long_description=README,
       classifiers=[
