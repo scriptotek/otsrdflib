@@ -1,6 +1,7 @@
 from rdflib.plugins.serializers.turtle import TurtleSerializer
 from rdflib.namespace import Namespace, FOAF, SKOS, RDF
 from rdflib import BNode
+import re
 
 
 class OrderedTurtleSerializer(TurtleSerializer):
