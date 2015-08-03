@@ -24,10 +24,8 @@ Usage:
     serializer.serialize(out)
 
 
-Subjects are grouped by class membership. The order of classes
-is configured through `serializer.topClasses`.
-A default list is provided to have e.g. `SKOS.ConceptScheme` classes
-appear before `SKOS.Concept`:
+Class order is imposed by setting `serializer.topClasses`.
+The default list is suitable for thesauri and other controlled vocabularies:
 
 .. code-block:: python
 
@@ -39,3 +37,17 @@ appear before `SKOS.Concept`:
                            SD.NamedGraph,
                            ISOTHES.ThesaurusArray,
                            SKOS.Concept]
+
+Instance order (within a class) is imposed by adding URI patterns
+to `serializer.sorters`:
+
+.. code-block:: python
+
+    serializer.sorters = {
+      'http://dewey.info/class/(T?([0-9]+)\-\-)?([0-9.]+)': lambda x: (0 if x[1] is None else int(x[1])*1000) + float(x[2])
+    }
+
+URIs that doesn't match any of the specialized sorters are sorted
+alphabetically using the Python
+`cmp <https://docs.python.org/2/library/functions.html#cmp>`_ method.
+

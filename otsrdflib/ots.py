@@ -14,7 +14,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
         SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
         ISOTHES = Namespace('http://purl.org/iso25964/skos-thes#')
 
-        # Order of classes:
+        # Class order:
         self.topClasses = [SKOS.ConceptScheme,
                            FOAF.Organization,
                            SD.Service,
@@ -24,14 +24,24 @@ class OrderedTurtleSerializer(TurtleSerializer):
                            ISOTHES.ThesaurusArray,
                            SKOS.Concept]
 
+        # Instance order:
+        self.sorters = {
+            '.*?([0-9]+)$': lambda x: int(x[0])
+        }
+
         # Order of instances:
-        def compare(x, y):
-            x2 = int(re.sub(r'[^0-9]', '', x))
-            y2 = int(re.sub(r'[^0-9]', '', y))
-            if x2 == 0 or y2 == 0:
-                return cmp(x, y)
-            else:
-                return cmp(x2, y2)
+        def compare(x1, x2):
+            # Check if the instances match any special pattern:
+            for pattern, func in self.sorters.items():
+                m1 = re.match(pattern, x1)
+                m2 = re.match(pattern, x2)
+
+                if m1 and m2:
+                    t1 = func(m1.groups())
+                    t2 = func(m2.groups())
+                    return cmp(t1, t2)
+            # Default to alphabetical order:
+            return cmp(x1, x2)
 
         self.sortFunction = compare
 
