@@ -67,6 +67,9 @@ used as a numerical sort key:
       '.*?([0-9]+)$': lambda x: int(x[0])
     }
 
+Here ``x`` refers to the match object groups. Note that index 0 refers
+to the first group, not the entire match!
+
 With this sorter, `http://…/…/99` will be arranged before `http://…/…/100`
 since the sort keys are the integers 99 and 100. Note that if you have
 number-ending URIs ending with different bases, these will be mangled together.
@@ -83,19 +86,25 @@ One simple way to group together URIs with the same base could be to use a
     }
 
 For a slightly more complicated example, we have a look at Dewey URIs.
-A typical URI might look like `http://dewey.info/class/001.433/e23/` for
-which we want to use the decimal number `1.433` as the sort key.
+For a typical URI like `http://dewey.info/class/001.433/e23/`, we would
+like to use the decimal number `1.433` as the sort key. We can achieve
+that by configuring a sorter like so:
+
+.. code-block:: python
 
     serializer.sorters = {
       'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0])
     }
 
-But there's also table numbers like `http://dewey.info/class/T1--0901/e23/`.
-We want to have the tables T1, T2, ... follow the main schedules, and we note
-that the table numbers like `0901` represents a fractional part.
+But then there's also table numbers like `http://dewey.info/class/T1--0901/e23/`.
+We want to have the tables T1, T2, ... follow the main schedules.
 Since the main schedules go from 0 to 999.99… we can map the tables T1…T6 to
-some larger integers, like 1001…1006. Then the sort key for `T1--0901` becomes
-`1001.0901`.
+some larger integers, like 1001…1006.
+Noting that the table numbers like `0901` represents a fractional part,
+the sort key for `T1--0901` becomes `1001.0901`. Such keys can be generated
+by adding another sorter:
+
+.. code-block:: python
 
     serializer.sorters = {
       'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
