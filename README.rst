@@ -54,16 +54,50 @@ The default list is suitable for thesauri and other controlled vocabularies:
                            ISOTHES.ThesaurusArray,
                            SKOS.Concept]
 
-Instance order (within a class) is imposed by adding URI patterns
-to `serializer.sorters`:
+Instance order (within a class) is imposed using the Python
+`cmp <https://docs.python.org/2/library/functions.html#cmp>`_ method.
+By default, URIs are sorted alphabetically as-is, but with
+`serializer.sorters` you can generate your own sort key based on
+URI patterns. By default, if a URI ends with a number, that number is
+used as a numerical sort key:
 
 .. code-block:: python
 
     serializer.sorters = {
-      'http://dewey.info/class/(T?([0-9]+)\-\-)?([0-9.]+)': lambda x: (0 if x[1] is None else int(x[1])*1000) + float(x[2])
+      '.*?([0-9]+)$': lambda x: int(x[0])
     }
 
-URIs that doesn't match any of the specialized sorters are sorted
-alphabetically using the Python
-`cmp <https://docs.python.org/2/library/functions.html#cmp>`_ method.
+With this sorter, `http://…/…/99` will be arranged before `http://…/…/100`
+since the sort keys are the integers 99 and 100. Note that if you have
+number-ending URIs ending with different bases, these will be mangled together.
+One simple way to group together URIs with the same base could be to use a
+"large" number that represents the base, for instance a 8-digit hash:
 
+.. code-block:: python
+
+    def xhash(s):
+        return int(hashlib.sha1(x[0]).hexdigest(), 16) % 10**8
+
+    serializer.sorters = {
+      '(.*?)([0-9]+)$': lambda x: xhash(x[0]) + int(x[1])
+    }
+
+For a slightly more complicated example, we have a look at Dewey URIs.
+A typical URI might look like `http://dewey.info/class/001.433/e23/` for
+which we want to use the decimal number `1.433` as the sort key.
+
+    serializer.sorters = {
+      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0])
+    }
+
+But there's also table numbers like `http://dewey.info/class/T1--0901/e23/`.
+We want to have the tables T1, T2, ... follow the main schedules, and we note
+that the table numbers like `0901` represents a fractional part.
+Since the main schedules go from 0 to 999.99… we can map the tables T1…T6 to
+some larger integers, like 1001…1006. Then the sort key for `T1--0901` becomes
+`1001.0901`.
+
+    serializer.sorters = {
+      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
+      'http://dewey.info/class/T([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
+    }
