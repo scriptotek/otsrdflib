@@ -34,13 +34,15 @@ class OrderedTurtleSerializer(TurtleSerializer):
             # Check if the instances match any special pattern:
             for pattern, func in self.sorters.items():
                 m1 = re.match(pattern, x1)
+                if m1:
+                    x1 = func(m1.groups())
+                    break
+            for pattern, func in self.sorters.items():
                 m2 = re.match(pattern, x2)
+                if m2:
+                    x2 = func(m2.groups())
+                    break
 
-                if m1 and m2:
-                    t1 = func(m1.groups())
-                    t2 = func(m2.groups())
-                    return cmp(t1, t2)
-            # Default to alphabetical order:
             return cmp(x1, x2)
 
         self.sortFunction = compare
