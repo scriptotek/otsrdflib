@@ -15,13 +15,15 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
 setup(name='otsrdflib',
-      version='0.2.3',
+      version='0.3.1',
       description='Ordered Turtle Serializer for rdflib',
       long_description=README,
       classifiers=[
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7'
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5'
       ],
       keywords='rdflib turtle serializer',
       author='Dan Michael O. Heggø',
