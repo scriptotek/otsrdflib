@@ -29,6 +29,6 @@ setup(name='otsrdflib',
       url='https://github.com/scriptotek/rdflib_ots',
       license='MIT',
       packages=['otsrdflib'],
-      install_requires=['rdflib'],
+      install_requires=['rdflib', 'six'],
       zip_safe=True
       )

@@ -2,7 +2,7 @@ import unittest
 from otsrdflib import OrderedTurtleSerializer
 from rdflib import Graph
 import hashlib
-from cStringIO import StringIO
+from six import StringIO
 
 
 class TestCase(unittest.TestCase):
