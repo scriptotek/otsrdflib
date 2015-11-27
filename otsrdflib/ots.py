@@ -33,22 +33,16 @@ class OrderedTurtleSerializer(TurtleSerializer):
         }
 
         # Order of instances:
-        def compare(x1, x2):
+        def sortKey(x):
             # Check if the instances match any special pattern:
             for pattern, func in self.sorters.items():
-                m1 = re.match(pattern, x1)
+                m1 = re.match(pattern, x)
                 if m1:
-                    x1 = func(m1.groups())
-                    break
-            for pattern, func in self.sorters.items():
-                m2 = re.match(pattern, x2)
-                if m2:
-                    x2 = func(m2.groups())
-                    break
+                    return func(m1.groups())
 
-            return cmp(x1, x2)
+            return x
 
-        self.sortFunction = compare
+        self.sortFunction = sortKey
 
     def orderSubjects(self):
         seen = {}
@@ -56,7 +50,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
 
         for classURI in self.topClasses:
             members = list(self.store.subjects(RDF.type, classURI))
-            members.sort(self.sortFunction)
+            members.sort(key=self.sortFunction)
 
             for member in members:
                 subjects.append(member)
