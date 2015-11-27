@@ -1,0 +1,8 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wd: <http://data.ub.uio.no/webdewey-terms#> .
+
+<http://data.ub.uio.no/realfagstermer/c43> a skos:Concept ;
+	wd:component [ wd:class <http://data.ub.uio.no/ddc/T1--012> ;
+        wd:index 2 ],
+    [ wd:class <http://data.ub.uio.no/ddc/001> ;
+        wd:index 1 ] .
