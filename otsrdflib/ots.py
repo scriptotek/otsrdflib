@@ -3,26 +3,29 @@ from rdflib.namespace import Namespace, FOAF, SKOS, RDF
 from rdflib import BNode
 import re
 
+SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
+ISOTHES = Namespace('http://purl.org/iso25964/skos-thes#')
+
 
 class OrderedTurtleSerializer(TurtleSerializer):
 
     short_name = "ots"
 
-    def __init__(self, store):
+    topClasses = [SKOS.ConceptScheme,
+                   FOAF.Organization,
+                   SD.Service,
+                   SD.Dataset,
+                   SD.Graph,
+                   SD.NamedGraph,
+                   ISOTHES.ThesaurusArray,
+                   SKOS.Concept]
+
+    def __init__(self, store, topClasses=None):
         super(OrderedTurtleSerializer, self).__init__(store)
 
-        SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
-        ISOTHES = Namespace('http://purl.org/iso25964/skos-thes#')
-
         # Class order:
-        self.topClasses = [SKOS.ConceptScheme,
-                           FOAF.Organization,
-                           SD.Service,
-                           SD.Dataset,
-                           SD.Graph,
-                           SD.NamedGraph,
-                           ISOTHES.ThesaurusArray,
-                           SKOS.Concept]
+        if topClasses is not None:
+            self.topClasses = topClasses
 
         # Instance order:
         self.sorters = {
