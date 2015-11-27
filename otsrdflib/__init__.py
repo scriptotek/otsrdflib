@@ -1,1 +1,1 @@
-from ots import OrderedTurtleSerializer
+from .ots import OrderedTurtleSerializer
