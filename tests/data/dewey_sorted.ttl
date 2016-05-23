@@ -1,0 +1,33 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<http://dewey.info/class/0/e23/> a skos:Concept .
+
+<http://dewey.info/class/00/e23/> a skos:Concept .
+
+<http://dewey.info/class/000/e23/> a skos:Concept .
+
+<http://dewey.info/class/000.01/e23/> a skos:Concept .
+
+<http://dewey.info/class/000.1/e23/> a skos:Concept .
+
+<http://dewey.info/class/01/e23/> a skos:Concept .
+
+<http://dewey.info/class/010/e23/> a skos:Concept .
+
+<http://dewey.info/class/02/e23/> a skos:Concept .
+
+<http://dewey.info/class/020/e23/> a skos:Concept .
+
+<http://dewey.info/class/1/e23/> a skos:Concept .
+
+<http://dewey.info/class/10/e23/> a skos:Concept .
+
+<http://dewey.info/class/100/e23/> a skos:Concept .
+
+<http://dewey.info/class/2/e23/> a skos:Concept .
+
+<http://dewey.info/class/20/e23/> a skos:Concept .
+
+<http://dewey.info/class/200/e23/> a skos:Concept .
+
+<http://dewey.info/class/1--086942/e23/> a skos:Concept .
