@@ -36,7 +36,7 @@ class TestCase(unittest.TestCase):
         ots = OrderedTurtleSerializer(graph)
 
         ots.sorters = [
-            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{0}--{0}'.format(x[0], x[1])),  # table numbers
             ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
         ]
 
