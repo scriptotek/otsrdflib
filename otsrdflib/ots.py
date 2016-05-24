@@ -28,15 +28,15 @@ class OrderedTurtleSerializer(TurtleSerializer):
             self.topClasses = topClasses
 
         # Instance order:
-        self.sorters = {
-            '.*?([0-9]+)$': lambda x: int(x[0])
-        }
+        self.sorters = [
+            ('.*?([0-9]+)$', lambda x: int(x[0]))
+        ]
 
         # Order of instances:
         def sortKey(x):
             # Check if the instances match any special pattern:
-            for pattern, func in self.sorters.items():
-                m1 = re.match(pattern, x)
+            for pattern, func in self.sorters:
+                m1 = re.search(pattern, x)
                 if m1:
                     return func(m1.groups())
 

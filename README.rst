@@ -63,9 +63,9 @@ used as a numerical sort key:
 
 .. code-block:: python
 
-    serializer.sorters = {
-      '.*?([0-9]+)$': lambda x: int(x[0])
-    }
+    serializer.sorters = [
+      ('.*?([0-9]+)$', lambda x: int(x[0]))
+    ]
 
 Here ``x`` refers to the match object groups. Note that index 0 refers
 to the first group, not the entire match!
@@ -81,9 +81,9 @@ One simple way to group together URIs with the same base could be to use a
     def xhash(s):
         return int(hashlib.sha1(x[0]).hexdigest(), 16) % 10**8
 
-    serializer.sorters = {
-      '(.*?)([0-9]+)$': lambda x: xhash(x[0]) + int(x[1])
-    }
+    serializer.sorters = [
+      ('(.*?)([0-9]+)$', lambda x: xhash(x[0]) + int(x[1]))
+    ]
 
 For a slightly more complicated example, we have a look at Dewey URIs.
 For a typical URI like `http://dewey.info/class/001.433/e23/`, we would
@@ -92,9 +92,9 @@ that by configuring a sorter like so:
 
 .. code-block:: python
 
-    serializer.sorters = {
-      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0])
-    }
+    serializer.sorters = [
+      ('http://dewey.info/class/([0-9.]+)', lambda x: float(x[0]))
+    ]
 
 But then there's also table numbers like `http://dewey.info/class/T1--0901/e23/`.
 We want to have the tables T1, T2, ... follow the main schedules.
@@ -106,7 +106,17 @@ by adding another sorter:
 
 .. code-block:: python
 
-    serializer.sorters = {
-      'http://dewey.info/class/([0-9.]+)': lambda x: float(x[0]),
-      'http://dewey.info/class/T([0-9])\-\-([0-9]+)': lambda x: 1000. + int(x[0]) + float('.' + x[1])
-    }
+    serializer.sorters = [
+      ('http://dewey.info/class/([0-9.]+)', lambda x: float(x[0])),
+      ('http://dewey.info/class/T([0-9])\-\-([0-9]+)', lambda x: 1000. + int(x[0]) + float('.' + x[1]))
+    ]
+
+But then there's a couple more cases.. Perhaps alphabetic sorting would work just as well? Seems like it does.
+
+    ots.sorters = [
+        ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+    ]
+
+Here we've just prefixed table numbers with 'T' and normal schedule numbers with 'A'. Also, we've chosen to match the url fragment before '/e', which is the edition part of the dewey.info urls.
+

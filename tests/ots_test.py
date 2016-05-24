@@ -16,9 +16,9 @@ class TestCase(unittest.TestCase):
         graph.load('tests/data/group_unsorted.ttl', format='turtle')
         ots = OrderedTurtleSerializer(graph)
 
-        ots.sorters = {
-            '(.*?)([0-9]+)$': lambda x: self.xhash(x[0]) + int(x[1])
-        }
+        ots.sorters = [
+            ('(.*?)([0-9]+)$', lambda x: self.xhash(x[0]) + int(x[1]))
+        ]
 
         out = BytesIO()
         ots.serialize(out)
@@ -27,7 +27,7 @@ class TestCase(unittest.TestCase):
         ref = open('tests/data/group_sorted.ttl').read()
         ref = '\n'.join([x for x in ref.split('\n') if x.startswith('<')])
 
-        assert out.strip() == ref.strip()
+        assert ref.strip() == out.strip()
 
     def test_dewey_sorter(self):
 
@@ -35,12 +35,10 @@ class TestCase(unittest.TestCase):
         graph.load('tests/data/dewey_unsorted.ttl', format='turtle')
         ots = OrderedTurtleSerializer(graph)
 
-        ots.sorters = {
-            'http://dewey.info/class/([0-9]{1})/': lambda x: float(x[0] + '00') - 2.e-7,   # a smaller number
-            'http://dewey.info/class/([0-9]{2})/': lambda x: float(x[0] + '0') - 1.e-7,  # a small number (so we don't collide with the last .999... number)
-            'http://dewey.info/class/([0-9.]{3,})/': lambda x: float(x[0]),
-            'http://dewey.info/class/([0-9])\-\-([0-9]+)/': lambda x: 1000. + int(x[0]) + float('.' + x[1])
-        }
+        ots.sorters = [
+            ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
+            ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+        ]
 
         out = BytesIO()
         ots.serialize(out)
@@ -49,7 +47,7 @@ class TestCase(unittest.TestCase):
         ref = open('tests/data/dewey_sorted.ttl').read()
         ref = '\n'.join([x for x in ref.split('\n') if x.startswith('<')])
 
-        assert out.strip() == ref.strip()
+        assert ref.strip() == out.strip()
 
     def test_numeric(self):
 
@@ -63,7 +61,7 @@ class TestCase(unittest.TestCase):
         ref = open('tests/data/numeric_sorted.ttl').read()
         ref = '\n'.join([x for x in ref.split('\n') if x.startswith('<')])
 
-        assert out.strip() == ref.strip()
+        assert ref.strip() == out.strip()
 
     def test_bnodes_sort(self):
 
