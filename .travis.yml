@@ -7,7 +7,9 @@ python:
 
 install:
   - python setup.py install
+  - pip install collective.checkdocs
 
 script:
   - py.test
+  - python setup.py checkdocs
 

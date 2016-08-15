@@ -113,6 +113,8 @@ by adding another sorter:
 
 But then there's a couple more cases.. Perhaps alphabetic sorting would work just as well? Seems like it does.
 
+.. code-block:: python
+
     ots.sorters = [
         ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
         ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
