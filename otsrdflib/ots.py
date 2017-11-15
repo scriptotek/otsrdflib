@@ -29,7 +29,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
 
         # Instance order:
         self.sorters = [
-            ('.*?([0-9]+)$', lambda x: int(x[0]))
+            ('.*?/[A-Za-z]+([0-9]+)$', lambda x: int(x[0]))
         ]
 
         # Order of instances:
