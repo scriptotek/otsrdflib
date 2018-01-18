@@ -31,6 +31,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
         self.sorters = [
             ('.*?/[A-Za-z]+([0-9]+)$', lambda x: int(x[0]))
         ]
+        self.defaultSortKey = 0  # should be same type as returned by sorters
 
         # Order of instances:
         def sortKey(x):
@@ -40,7 +41,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
                 if m1:
                     return func(m1.groups())
 
-            return x
+            return self.defaultSortKey
 
         self.sortFunction = sortKey
 
