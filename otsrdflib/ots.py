@@ -29,7 +29,7 @@ class OrderedTurtleSerializer(TurtleSerializer):
 
         # Instance order:
         self.sorters = [
-            ('.*?/[A-Za-z]+([0-9]+)$', lambda x: int(x[0]))
+            ('.*?/[A-Za-z]+([0-9.]+)$', lambda x: float(x[0]))
         ]
         self.defaultSortKey = 0  # should be same type as returned by sorters
 
