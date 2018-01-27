@@ -33,11 +33,10 @@ Usage:
     from rdflib import graph
     from otsrdflib import OrderedTurtleSerializer
 
-    my_graph = Graph()
-
-    out = open('out.ttl', 'wb')
-    serializer = OrderedTurtleSerializer(my_graph)
-    serializer.serialize(out)
+    graph = Graph()
+    serializer = OrderedTurtleSerializer(graph)
+    with open('out.ttl', 'wb') as fp:
+        serializer.serialize(fp)
 
 
 Class order
@@ -51,11 +50,21 @@ followed by the other elements of the vocabulary:
 
 .. code-block:: python
 
+    from otsrdflib import OrderedTurtleSerializer
+    from rdflib import graph
+    from rdflib.namespace import Namespace, SKOS
+
+    ISOTHES = Namespace('http://purl.org/iso25964/skos-thes#')
+
+    graph = Graph()
+    serializer = OrderedTurtleSerializer(graph)
     serializer.class_order = [
         SKOS.ConceptScheme,
         SKOS.Concept,
         ISOTHES.ThesaurusArray,
     ]
+    with open('out.ttl', 'wb') as fp:
+        serializer.serialize(fp)
 
 Any class not included in the `class_order` list will be sorted alphabetically
 at the end, after the classes included in the list.
