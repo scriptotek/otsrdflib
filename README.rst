@@ -40,85 +40,85 @@ Usage:
     serializer.serialize(out)
 
 
-Class order is imposed by setting `serializer.topClasses`.
-The default list is suitable for thesauri and other controlled vocabularies:
+Class order
+-----------
+
+By default, classes are ordered alphabetically by their URIS.
+
+A custom order can be imposed by adding classes to the `class_order` attribute.
+For a SKOS vocabulary, for instance, you might want to sort the concept scheme first,
+followed by the other elements of the vocabulary:
 
 .. code-block:: python
 
-    serializer.topClasses = [SKOS.ConceptScheme,
-                           FOAF.Organization,
-                           SD.Service,
-                           SD.Dataset,
-                           SD.Graph,
-                           SD.NamedGraph,
-                           ISOTHES.ThesaurusArray,
-                           SKOS.Concept]
+    serializer.class_order = [
+        SKOS.ConceptScheme,
+        SKOS.Concept,
+        ISOTHES.ThesaurusArray,
+    ]
 
-Instance order (within a class) is imposed using the Python
-`cmp <https://docs.python.org/2/library/functions.html#cmp>`_ method.
-By default, URIs are sorted alphabetically as-is, but with
-`serializer.sorters` you can generate your own sort key based on
-URI patterns. By default, if a URI ends with a number, that number is
-used as a numerical sort key:
+Any class not included in the `class_order` list will be sorted alphabetically
+at the end, after the classes included in the list.
+
+Instance order
+--------------
+
+By default, instances of a class are ordered alphabetically by their URIS.
+
+A custom order can be imposed by defining functions that generate sort keys
+from the URIs. For instance, you could define a function that returns the
+numeric last part of an URI to be sorted numerically:
 
 .. code-block:: python
 
     serializer.sorters = [
-      ('.*?([0-9]+)$', lambda x: int(x[0]))
+        ('.*?/[^0-9]*([0-9.]+)$', lambda x: float(x[0])),
     ]
 
-Here ``x`` refers to the match object groups. Note that index 0 refers
-to the first group, not the entire match!
+The first element of the tuple (`'.*?/[^0-9]*([0-9.]+)$'`) is the regexp pattern
+to be matched against the URIs, while the second element (`lambda x: float(x[0])`)
+is the sort key generating function. In this case, it returns the first
+backreference as a float.
 
-With this sorter, `http://…/…/99` will be arranged before `http://…/…/100`
-since the sort keys are the integers 99 and 100. Note that if you have
-number-ending URIs ending with different bases, these will be mangled together.
-One simple way to group together URIs with the same base could be to use a
-"large" number that represents the base, for instance a 8-digit hash:
+The patterns in `sorters` will be attempted matched against instances
+of any class. You can also define patterns that will only be matched against
+instances of a specific class. Let's say you only wanted to sort instances
+of `SKOS.Concept` this way:
 
 .. code-block:: python
 
-    def xhash(s):
-        return int(hashlib.sha1(x[0]).hexdigest(), 16) % 10**8
+    from rdflib.namespace import SKOS
 
-    serializer.sorters = [
-      ('(.*?)([0-9]+)$', lambda x: xhash(x[0]) + int(x[1]))
-    ]
+    serializer.sorters_by_class = {
+        SKOS.Concept: [
+            ('.*?/[^0-9]*([0-9.]+)$', lambda x: float(x[0])),
+        ]
+    }
 
-For a slightly more complicated example, we have a look at Dewey URIs.
-For a typical URI like `http://dewey.info/class/001.433/e23/`, we would
-like to use the decimal number `1.433` as the sort key. We can achieve
-that by configuring a sorter like so:
-
-.. code-block:: python
-
-    serializer.sorters = [
-      ('http://dewey.info/class/([0-9.]+)', lambda x: float(x[0]))
-    ]
-
-But then there's also table numbers like `http://dewey.info/class/T1--0901/e23/`.
-We want to have the tables T1, T2, ... follow the main schedules.
-Since the main schedules go from 0 to 999.99… we can map the tables T1…T6 to
-some larger integers, like 1001…1006.
-Noting that the table numbers like `0901` represents a fractional part,
-the sort key for `T1--0901` becomes `1001.0901`. Such keys can be generated
-by adding another sorter:
+For a slightly more complicated example, let's look at Dewey. Classes
+in the main schedules are describes by URIs like
+`http://dewey.info/class/001.433/e23/`, and we will use the class number
+(001.433) for sorting. But there's also table classes
+like `http://dewey.info/class/1--0901/e23/`.
+We want to sort these at the end, after the main schedules.
+To achieve this, we define two sorters, one that matches the table classes
+and one that matches the main schedule classes:
 
 .. code-block:: python
 
     serializer.sorters = [
-      ('http://dewey.info/class/([0-9.]+)', lambda x: float(x[0])),
-      ('http://dewey.info/class/T([0-9])\-\-([0-9]+)', lambda x: 1000. + int(x[0]) + float('.' + x[1]))
-    ]
-
-But then there's a couple more cases.. Perhaps alphabetic sorting would work just as well? Seems like it does.
-
-.. code-block:: python
-
-    ots.sorters = [
         ('/([0-9A-Z\-]+)\-\-([0-9.\-;:]+)/e', lambda x: 'T{}--{}'.format(x[0], x[1])),  # table numbers
-        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # standard schedule numbers
+        ('/([0-9.\-;:]+)/e', lambda x: 'A' + x[0]),  # main schedule numbers
     ]
 
-Here we've just prefixed table numbers with 'T' and normal schedule numbers with 'A'. Also, we've chosen to match the url fragment before '/e', which is the edition part of the dewey.info urls.
+By prefixing the table numbers with 'T' and the main schedule numbers with 'A',
+we ensure the table numbers are sorted after the main schedule numbers.
 
+
+Changes in version 0.5
+----------------------
+
+* The `topClasses` attribute was renamed to `class_order` to better reflect
+  its content and comply with PEP8. It was also changed to be empty by default,
+  since the previous default list was rather random.
+* A `sorters_by_class` attribute was added to allow sorters to be defined per class.

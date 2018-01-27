@@ -54,6 +54,12 @@ class TestCase(unittest.TestCase):
         graph = Graph()
         graph.load('tests/data/numeric_unsorted.ttl', format='turtle')
         ots = OrderedTurtleSerializer(graph)
+
+        ots.sorters = [
+            ('.*?/[A-Za-z]+([0-9.]+)$', lambda x: float(x[0])),
+            ('.', lambda x: 0.0),  # default
+        ]
+
         out = BytesIO()
         ots.serialize(out)
         out = '\n'.join([x for x in out.getvalue().decode('utf-8').split('\n') if x.startswith('<')])

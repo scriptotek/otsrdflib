@@ -2,6 +2,6 @@
 
 <http://data.ub.uio.no/realfagstermer/c43> a skos:Concept .
 
-<http://data.ub.uio.no/realfagstermer/c26> a skos:Concept .
-
 <http://data.ub.uio.no/realfagstermer/thing> a skos:Concept .
+
+<http://data.ub.uio.no/realfagstermer/c26> a skos:Concept .

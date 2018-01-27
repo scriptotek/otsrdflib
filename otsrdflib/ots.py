@@ -1,67 +1,75 @@
 from rdflib.plugins.serializers.turtle import TurtleSerializer
 from rdflib.namespace import Namespace, FOAF, SKOS, RDF
 from rdflib import BNode
+import logging
 import re
 
 SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
 ISOTHES = Namespace('http://purl.org/iso25964/skos-thes#')
+
+logger = logging.getLogger(__name__)
 
 
 class OrderedTurtleSerializer(TurtleSerializer):
 
     short_name = "ots"
 
-    topClasses = [SKOS.ConceptScheme,
-                   FOAF.Organization,
-                   SD.Service,
-                   SD.Dataset,
-                   SD.Graph,
-                   SD.NamedGraph,
-                   ISOTHES.ThesaurusArray,
-                   SKOS.Concept]
-
-    def __init__(self, store, topClasses=None):
+    def __init__(self, store):
         super(OrderedTurtleSerializer, self).__init__(store)
 
         # Class order:
-        if topClasses is not None:
-            self.topClasses = topClasses
+        self.class_order = []
 
-        # Instance order:
+        # Sort key generators for specific classes :
+        self.sorters_by_class = {}
+
+        # Default sort key generators
         self.sorters = [
-            ('.*?/[A-Za-z]+([0-9.]+)$', lambda x: float(x[0]))
+            ('^(.+)$', lambda x: str(x[0])),
         ]
-        self.defaultSortKey = 0  # should be same type as returned by sorters
+
+    def getSorters(self, class_uri):
+        return self.sorters_by_class.get(class_uri, self.sorters)
+
+    def getSortKeyFunction(self, class_uri):
+        sorters = self.getSorters(class_uri)
 
         # Order of instances:
-        def sortKey(x):
+        def sortKeyFn(x):
             # Check if the instances match any special pattern:
-            for pattern, func in self.sorters:
+            for pattern, func in sorters:
                 m1 = re.search(pattern, x)
                 if m1:
                     return func(m1.groups())
+            logging.warning('%s did not match any sorters', x)
 
-            return self.defaultSortKey
-
-        self.sortFunction = sortKey
+        return sortKeyFn
 
     def orderSubjects(self):
         seen = {}
         subjects = []
 
-        for classURI in self.topClasses:
-            members = list(self.store.subjects(RDF.type, classURI))
-            members.sort(key=self.sortFunction)
+        otherClasses = [x for x in sorted(set(self.store.objects(predicate=RDF.type))) if x not in self.class_order]
+
+        # Loop over all classes
+        for class_uri in self.class_order + otherClasses:
+
+            # Sort the members of each class
+            members = sorted(self.store.subjects(RDF.type, class_uri),
+                             key=self.getSortKeyFunction(class_uri))
 
             for member in members:
                 subjects.append(member)
                 self._topLevels[member] = True
                 seen[member] = True
 
+        # Include anything not seen yet
         recursable = [
             (isinstance(subject, BNode),
-             self._references[subject], subject)
-            for subject in self._subjects if subject not in seen]
+            self._references[subject], subject)
+            for subject in self._subjects
+            if subject not in seen
+        ]
 
         recursable.sort()
         subjects.extend([subject for (isbnode, refs, subject) in recursable])
