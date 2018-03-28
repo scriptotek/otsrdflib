@@ -1,0 +1,15 @@
+@prefix : <http://example.org/foo#> .
+
+:a1 a <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+
+:a3 a <http://xmlns.com/foaf/0.1/Person> .
+
+:a5 a <http://xmlns.com/foaf/0.1/Document> .
+
+:a2 a <http://www.w3.org/2004/02/skos/core#Concept> .
+
+:a4 a <http://xmlns.com/foaf/0.1/Group> .
+
+:a6 a <http://xmlns.com/foaf/0.1/Image> .
+
+:a7 a <http://www.w3.org/2004/02/skos/core#Collection> .

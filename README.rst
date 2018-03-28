@@ -18,15 +18,15 @@ Ordered Turtle Serializer for rdflib
 ====================================
 
 An extension to the `rdflib <https://rdflib.readthedocs.org/>`_ Turtle serializer
-that adds order (at the price of speed).
-Useful when you need to generate diffs between Turtle files, or just to make it
-easier for human beings to inspect the files.
+that adds order. This is useful e.g. if you have Turtle files under version control
+and want clean diffs. Or if you just want to publish a nice and ordered file that is
+easier to inspect by human beings.
 
 .. code-block:: console
 
     $ pip install otsrdflib
 
-Usage:
+Getting started:
 
 .. code-block:: python
 
@@ -38,11 +38,10 @@ Usage:
     with open('out.ttl', 'wb') as fp:
         serializer.serialize(fp)
 
-
 Class order
 -----------
 
-By default, classes are ordered alphabetically by their URIS.
+By default, classes are ordered alphabetically by their URIs.
 
 A custom order can be imposed by adding classes to the `class_order` attribute.
 For a SKOS vocabulary, for instance, you might want to sort the concept scheme first,

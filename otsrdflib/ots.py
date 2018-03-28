@@ -49,10 +49,12 @@ class OrderedTurtleSerializer(TurtleSerializer):
         seen = {}
         subjects = []
 
-        otherClasses = [x for x in sorted(set(self.store.objects(predicate=RDF.type))) if x not in self.class_order]
+        # Find classes not included in self.class_order and sort them alphabetically
+        other_classes = [x for x in set(self.store.objects(predicate=RDF.type)) if x not in self.class_order]
+        other_classes = sorted(other_classes)
 
         # Loop over all classes
-        for class_uri in self.class_order + otherClasses:
+        for class_uri in self.class_order + other_classes:
 
             # Sort the members of each class
             members = sorted(self.store.subjects(RDF.type, class_uri),
